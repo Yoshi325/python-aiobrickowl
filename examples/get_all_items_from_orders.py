@@ -1,6 +1,6 @@
 #pylint: disable=wrong-import-position
 '''
-    An example of how to use aiobrickowl to return your (as a customer) orders.
+    An example of how to use aiobrickowl to return all items from your (as a customer) orders.
 '''
 
 import os
@@ -9,21 +9,24 @@ sys.path.append(os.path.realpath(os.path.join(os.path.dirname(__file__), '..')))
 
 import asyncio
 
+
 from aiobrickowl.session import ApiSession
+from aiobrickowl.shortcuts import order_items
+from aiobrickowl.shortcuts import order_list_customer
 
 
 async def main(api_key:str): #pylint: disable=missing-docstring
     async with ApiSession(api_key) as session:
-        from aiobrickowl.shortcuts import order_list_customer
-        response = await order_list_customer(session)
 
-        # another way to accomplish this is:
-        # from aiobrickowl import order
-        # from aiobrickowl.order import OrderListType
-        # from aiobrickowl.order import OrderListParameters
-        # response = await order.list(session, OrderListParameters(list_type=OrderListType['Customer']))
-
-        print(response)
+        orders = await order_list_customer(session)
+        for order_ in orders:
+            print('order:', order_.order_id)
+            items = await order_items(session, order_.order_id)
+            # another way to accomplish this is:
+            # from aiobrickowl import order
+            # items = await order.items(session, order_.order_id)
+            for item in items:
+                print(item)
 
 if ('__main__' == __name__): #pylint: disable=missing-docstring
     _api_key = os.environ.get('BRICKOWL_API_KEY') #pylint: disable=invalid-name

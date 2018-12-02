@@ -1,6 +1,8 @@
 from typing import Dict
 from dataclasses import dataclass
 
+Url = str
+
 
 @dataclass(frozen=True)
 class ApiError:
